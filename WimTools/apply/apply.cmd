@@ -2,18 +2,16 @@
 setlocal
 
 echo.
-echo WimApply - Apply workflow
-echo ==========================
+echo WimApply
+echo ========
 echo.
-echo Placeholder only.
+echo Rudimentary apply workflow:
+echo 1. Select disk
+echo 2. Clean disk
+echo 3. Apply WIM image
+echo 4. Write bootloader
 echo.
-echo Planned steps:
-echo 1. Select source WIM from \Images
-echo 2. Confirm destructive disk operation
-echo 3. Prepare target disk with diskpart
-echo 4. Apply Windows image with DISM
-echo 5. Write boot files with bcdboot
-echo 6. Optional driver injection
+echo This script is not implemented yet.
 echo.
 
 cmd /k
