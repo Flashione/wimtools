@@ -14,6 +14,17 @@ The goal is simple:
 - use `startnet.cmd` only as a small boot loader
 - keep images, captures and logs on a writable NTFS partition
 
+## Tool names
+
+The toolkit is split into two clear workflow modules:
+
+```text
+WimApply    Apply a Windows image to a target device
+WimCapture  Capture a Windows installation into a WIM image
+```
+
+The names are intentionally direct. Nobody needs fantasy naming when a disk is about to be wiped.
+
 ## Official Microsoft downloads
 
 Download the required Microsoft components here:
@@ -87,8 +98,8 @@ FAT32 boot partition:
 NTFS data partition:
 \WimTools\WIMTOOLS.TAG
 \WimTools\startup.cmd
-\WimTools\forge\
-\WimTools\vault\
+\WimTools\apply\apply.cmd
+\WimTools\capture\capture.cmd
 \Images\
 \Captures\
 \Logs\
@@ -110,9 +121,9 @@ The marker file `\WimTools\WIMTOOLS.TAG` can be empty. It only has to exist.
 │   ├── startup.cmd
 │   ├── common/
 │   │   └── set-power.cmd
-│   ├── forge/
+│   ├── apply/
 │   │   └── apply.cmd
-│   └── vault/
+│   └── capture/
 │       └── capture.cmd
 └── docs/
     ├── winpe-build.md
