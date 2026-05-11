@@ -1,29 +1,31 @@
 # WimTools
 
-WimTools is a small Windows PE based toolkit concept for Windows image apply and capture workflows.
+WimTools is a simple Windows PE based toolkit for Windows image apply and capture workflows.
 
 This repository does **not** contain a prepared WinPE image, ISO, WIM, ESD or Microsoft ADK files. WinPE must be created locally from the official Microsoft ADK and Windows PE Add-on.
 
-## Purpose
+## Versions
 
-The goal is simple:
-
-- build WinPE from official Microsoft sources
-- keep `boot.wim` generic and reproducible
-- keep the actual tool logic outside the WIM under `\WimTools`
-- use `startnet.cmd` only as a small boot loader
-- keep images, captures and logs on a writable NTFS partition
-
-## Tool names
-
-The toolkit is split into two clear workflow modules:
+The same base can be packaged in three variants:
 
 ```text
-WimApply    Apply a Windows image to a target device
-WimCapture  Capture a Windows installation into a WIM image
+WimTools    Apply + Capture
+WimApply    Apply only
+WimCapture  Capture only
 ```
 
-The names are intentionally direct. Nobody needs fantasy naming when a disk is about to be wiped.
+## WimApply scope
+
+WimApply is intentionally rudimentary:
+
+```text
+select disk
+clean disk
+apply WIM image
+write bootloader
+```
+
+No GUI, no deployment server, no hidden automation magic. Pick a disk, wipe it, apply the image, make it boot. Apparently even that needs a project now, because Windows imaging exists to punish optimism.
 
 ## Official Microsoft downloads
 
@@ -57,8 +59,6 @@ WinPE-SecureStartup
 WinPE-SecureBootCmdlets
 ```
 
-This gives the PE environment PowerShell, DISM cmdlets, WMI, storage tooling and Secure Boot / BitLocker related command support without turning the image into a bloated museum exhibit.
-
 ## Startup design
 
 The WinPE image contains only a minimal `startnet.cmd`.
@@ -73,9 +73,9 @@ boot.wim
     └── calls \WimTools\startup.cmd from the external writable partition
 ```
 
-This means scripts can be changed on the USB data partition without rebuilding `boot.wim` every time.
+Scripts can be changed on the USB data partition without rebuilding `boot.wim`.
 
-## Recommended USB layout
+## USB layout
 
 Use a two-partition USB stick:
 
@@ -149,8 +149,6 @@ adk/
 winpe/
 ```
 
-If a ready-made package is needed for internal use, publish it as a GitHub Release asset only after checking distribution requirements. The preferred model is still: document the build, then generate the PE locally.
-
 ## Status
 
-Early development. The repository currently documents the WinPE build, startup chain and planned apply/capture structure.
+Early development. WimApply is the first practical workflow target.
