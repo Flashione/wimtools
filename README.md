@@ -4,14 +4,54 @@ WimTools is a simple Windows PE based toolkit for Windows image apply and captur
 
 This repository does **not** contain a prepared WinPE image, ISO, WIM, ESD or Microsoft ADK files. WinPE must be created locally from the official Microsoft ADK and Windows PE Add-on.
 
-## Versions
+## Simple idea
 
-The same base can be packaged in three variants:
+There are two parts:
 
 ```text
-WimTools    Apply + Capture
-WimApply    Apply only
-WimCapture  Capture only
+FAT32 boot partition  = WinPE boot files only
+NTFS data partition   = one complete WimTools edition folder
+```
+
+`WimTools` does **not** belong on the FAT32 boot partition. It belongs on the writable NTFS data partition.
+
+The customer-facing workflow should be this simple:
+
+```text
+1. Build or copy the WinPE boot files to the FAT32 partition.
+2. Choose one edition folder.
+3. Copy the contents of that edition folder to the NTFS partition root.
+4. Boot the device.
+```
+
+## Editions
+
+The repository contains three self-contained edition folders:
+
+```text
+editions/WimTools/     Apply + Capture
+editions/WimApply/     Apply only
+editions/WimCapture/   Capture only
+```
+
+Each edition folder is meant to be copied as-is to the NTFS data partition root.
+
+Example for the full edition:
+
+```text
+copy contents of editions/WimTools/ to NTFS root
+```
+
+Result on the NTFS partition:
+
+```text
+\WimTools\WIMTOOLS.TAG
+\WimTools\startup.cmd
+\WimTools\apply\apply.cmd
+\WimTools\capture\capture.cmd
+\Images\
+\Captures\
+\Logs\
 ```
 
 ## WimApply scope
@@ -25,7 +65,7 @@ apply WIM image
 write bootloader
 ```
 
-No GUI, no deployment server, no hidden automation magic. Pick a disk, wipe it, apply the image, make it boot. Apparently even that needs a project now, because Windows imaging exists to punish optimism.
+No GUI, no deployment server, no hidden automation magic. Pick a disk, wipe it, apply the image, make it boot. Astonishingly, even that needs guardrails, because Windows imaging is where optimism goes to file a complaint.
 
 ## Official Microsoft downloads
 
@@ -46,7 +86,7 @@ After that, install the Windows PE Add-on.
 
 ## Baseline WinPE optional components
 
-The current WimTools PE baseline uses these WinPE optional components:
+The current WinPE baseline uses these optional components:
 
 ```text
 WinPE-WMI
@@ -59,50 +99,16 @@ WinPE-SecureStartup
 WinPE-SecureBootCmdlets
 ```
 
-## Startup design
+## Startup chain
 
 The WinPE image contains only a minimal `startnet.cmd`.
-
-Startup chain:
 
 ```text
 boot.wim
 └── Windows\System32\startnet.cmd
     ├── runs wpeinit
     ├── searches all drive letters for \WimTools\WIMTOOLS.TAG
-    └── calls \WimTools\startup.cmd from the external writable partition
-```
-
-Scripts can be changed on the USB data partition without rebuilding `boot.wim`.
-
-## USB layout
-
-Use a two-partition USB stick:
-
-```text
-Partition 1: FAT32, about 2 GB
-Purpose: WinPE boot files
-
-Partition 2: NTFS, remaining space
-Purpose: WimTools, images, captures and logs
-```
-
-Example layout:
-
-```text
-FAT32 boot partition:
-\EFI\
-\boot\
-\sources\boot.wim
-
-NTFS data partition:
-\WimTools\WIMTOOLS.TAG
-\WimTools\startup.cmd
-\WimTools\apply\apply.cmd
-\WimTools\capture\capture.cmd
-\Images\
-\Captures\
-\Logs\
+    └── calls \WimTools\startup.cmd from the NTFS data partition
 ```
 
 The marker file `\WimTools\WIMTOOLS.TAG` can be empty. It only has to exist.
@@ -116,15 +122,10 @@ The marker file `\WimTools\WIMTOOLS.TAG` can be empty. It only has to exist.
 │   └── startnet.cmd
 ├── scripts/
 │   └── build-winpe.cmd
-├── WimTools/
-│   ├── WIMTOOLS.TAG
-│   ├── startup.cmd
-│   ├── common/
-│   │   └── set-power.cmd
-│   ├── apply/
-│   │   └── apply.cmd
-│   └── capture/
-│       └── capture.cmd
+├── editions/
+│   ├── WimTools/
+│   ├── WimApply/
+│   └── WimCapture/
 └── docs/
     ├── winpe-build.md
     ├── usb-layout.md
