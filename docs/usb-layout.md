@@ -53,11 +53,18 @@ Example content:
 \WimTools\WIMTOOLS.TAG
 \WimTools\startup.cmd
 \WimTools\common\set-power.cmd
-\WimTools\forge\apply.cmd
-\WimTools\vault\capture.cmd
+\WimTools\apply\apply.cmd
+\WimTools\capture\capture.cmd
 \Images\
 \Captures\
 \Logs\
+```
+
+## Workflow modules
+
+```text
+WimApply    \WimTools\apply\apply.cmd
+WimCapture  \WimTools\capture\capture.cmd
 ```
 
 ## Marker file
