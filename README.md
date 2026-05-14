@@ -151,10 +151,16 @@ The restore-only package is located in:
 WimTools-Restore\
 ```
 
-For the final restore USB, the customer-facing folder on the NTFS partition must still be named:
+For USB runtime use, copy the contents of this package to a folder named:
 
 ```text
 WimTools\
+```
+
+This fixed folder name is required because `startnet.cmd` searches for:
+
+```text
+\WimTools\WIMTOOLS.TAG
 ```
 
 Minimal restore-only structure on the USB stick:
