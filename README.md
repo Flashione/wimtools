@@ -57,16 +57,14 @@ WinPE-SecureStartup
 WinPE-SecureBootCmdlets
 ```
 
-See `PE\README.md` for the complete WinPE build guide.
+See `WindowsPE\README.md` for the complete WinPE build guide.
 
 ## Repository folders
 
 ```text
-Create-WimTools-USB.cmd      Prepare a USB stick with FAT32 + NTFS partitions
-PE\                          WinPE build guide and startnet.cmd template
-WindowsPE\                   WinPE media files copied to the FAT32 boot partition
+WindowsPE\                   WinPE build guide and startnet.cmd template
 WimTools\                    Full internal WimTools toolkit
-Restore-Only\                Simplified restore-only variant
+WimTools-Restore\            Simplified restore-only package
 ```
 
 ## USB layout
@@ -147,7 +145,19 @@ WimTools\
 
 ## Restore Only version
 
-The Restore Only variant is intentionally reduced for simple restore use cases:
+The restore-only package is located in:
+
+```text
+WimTools-Restore\
+```
+
+For the final restore USB, the customer-facing folder on the NTFS partition must still be named:
+
+```text
+WimTools\
+```
+
+Minimal restore-only structure on the USB stick:
 
 ```text
 WimTools\
