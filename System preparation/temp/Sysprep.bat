@@ -1,0 +1,1 @@
+%WINDIR%\System32\Sysprep\sysprep.exe /generalize /oobe /shutdown /unattend:c:\temp\minimal_sysprep_64.xml

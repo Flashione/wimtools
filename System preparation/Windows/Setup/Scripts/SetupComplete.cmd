@@ -1,0 +1,1 @@
+cmd /c (powershell -ExecutionPolicy Bypass -file "C:\Windows\System32\ROScript.ps1")
