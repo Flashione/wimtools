@@ -4,16 +4,16 @@ WimTools is a small Windows PE based toolkit for Windows image restore, capture 
 
 The PE image is intentionally minimal. It only starts Windows PE, searches for a `WimTools` folder on the USB stick, and then runs `WimTools\startup.cmd`.
 
-The actual tools stay outside the PE image on the USB stick. This means the scripts can be changed without rebuilding the PE image, because apparently not rebuilding `boot.wim` for every tiny change is considered luxury now.
+The actual tools stay outside the PE image on the USB stick. This means the scripts can be changed without rebuilding the PE image.
 
 ## Main folders
 
 ```text
 Create-WimTools-USB.cmd      Prepare a USB stick with FAT32 + NTFS partitions
-PE\                          WinPE build notes and startnet.cmd template
+PE\                          WinPE build guide and startnet.cmd template
 WindowsPE\                   Files copied to the FAT32 boot partition
 WimTools\                    Full internal WimTools toolkit
-Customer-Restore\            Simplified customer restore variant
+Restore-Only\                Simplified restore-only variant
 ```
 
 ## USB layout
@@ -45,7 +45,7 @@ When found, it starts:
 
 The marker file content is ignored. The file only has to exist.
 
-See `PE\README.md` for the PE creation notes and `PE\startnet.cmd` for the loader template.
+See `PE\README.md` for the PE creation guide and `PE\startnet.cmd` for the loader template.
 
 ## Internal WimTools version
 
@@ -71,9 +71,9 @@ WimTools\
     └── Create-WimTools-USB.cmd
 ```
 
-## Customer restore version
+## Restore Only version
 
-The customer restore variant is intentionally simple:
+The Restore Only variant is intentionally simple:
 
 ```text
 WimTools\
@@ -82,7 +82,7 @@ WimTools\
 └── Recovery.wim
 ```
 
-`Recovery.wim` is the image file used by the customer restore script. If the repository contains only a placeholder, replace it with the real customer image before preparing the customer USB stick.
+`Recovery.wim` is the image file used by the restore-only script. If the repository contains only a placeholder, replace it with the real image before preparing the restore USB stick.
 
 ## Warning
 
