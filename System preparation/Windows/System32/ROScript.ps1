@@ -9,7 +9,7 @@ $currentComputerName = (Get-WmiObject -Class Win32_ComputerSystem).Name
 Rename-Computer -NewName $newComputerName -Force -PassThru
 
 # ************************************
-# * Change Auto-Logon to User Silica *
+# * *
 # ************************************
 reg delete "HKLM\Software\Microsoft\Windows NT\CurrentVersion\Winlogon" /v AutoLogonSID /f
 reg add "HKLM\Software\Microsoft\Windows NT\CurrentVersion\Winlogon" /v AutoAdminLogon /t REG_SZ /d 1 /f
