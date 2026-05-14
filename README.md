@@ -1,51 +1,125 @@
 # WimTools
 
-WimTools is a small Windows PE based toolkit for Windows image restore, capture and driver handling.
+WimTools is a Windows PE based toolkit for Windows image restore, capture, driver handling and USB stick preparation.
 
-The PE image is intentionally minimal. It only starts Windows PE, searches for a `WimTools` folder on the USB stick, and then runs `WimTools\startup.cmd`.
+The design is intentionally simple:
 
-The actual tools stay outside the PE image on the USB stick. This means the scripts can be changed without rebuilding the PE image.
+```text
+boot.wim
+└── Windows\System32\startnet.cmd
+    └── searches all drive letters for \WimTools\WIMTOOLS.TAG
+        └── calls \WimTools\startup.cmd from the detected USB data partition
+```
 
-## Main folders
+The actual WimTools scripts are not embedded into `boot.wim`. They stay on the external writable USB data partition. This keeps the PE image reusable and avoids rebuilding `boot.wim` whenever a script changes.
+
+Important:
+
+```text
+X: is the WinPE RAM drive.
+WimTools does not live on X:.
+USB drive letters are not stable in WinPE.
+The marker file is used to find the correct USB data partition.
+```
+
+## Microsoft requirements
+
+Install the official Microsoft tools on the build machine:
+
+```text
+Windows ADK:
+https://go.microsoft.com/fwlink/?linkid=2337875
+
+Windows PE Add-on:
+https://go.microsoft.com/fwlink/?linkid=2337681
+```
+
+Required ADK feature:
+
+```text
+Deployment Tools
+```
+
+The Windows PE Add-on is required because WinPE is not included directly in the ADK installer.
+
+## WinPE optional components
+
+The WimTools PE was built with these WinPE optional components:
+
+```text
+WinPE-WMI
+WinPE-NetFx
+WinPE-Scripting
+WinPE-PowerShell
+WinPE-DismCmdlets
+WinPE-StorageWMI
+WinPE-SecureStartup
+WinPE-SecureBootCmdlets
+```
+
+See `PE\README.md` for the complete WinPE build guide.
+
+## Repository folders
 
 ```text
 Create-WimTools-USB.cmd      Prepare a USB stick with FAT32 + NTFS partitions
 PE\                          WinPE build guide and startnet.cmd template
-WindowsPE\                   Files copied to the FAT32 boot partition
+WindowsPE\                   WinPE media files copied to the FAT32 boot partition
 WimTools\                    Full internal WimTools toolkit
 Restore-Only\                Simplified restore-only variant
 ```
 
 ## USB layout
 
-The USB stick uses two partitions:
+Recommended USB layout:
 
 ```text
 BOOT      FAT32   2 GB   Windows PE boot files
-WIMTOOLS  NTFS    Rest   WimTools tools, images and drivers
+WIMTOOLS  NTFS    Rest   WimTools tools, images, captures, drivers and logs
 ```
 
-Copy the content of `WindowsPE` to the FAT32 boot partition.
+FAT32 boot partition:
 
-Copy the `WimTools` folder to the NTFS partition.
+```text
+\EFI\
+\boot\
+\sources\boot.wim
+\bootmgr
+\bootmgr.efi
+```
 
-## WinPE loader behavior
+NTFS data partition:
 
-The embedded `startnet.cmd` inside WinPE searches all drive letters for:
+```text
+\WimTools\
+\Images\
+\Captures\
+\Logs\
+```
+
+The `WimTools` folder must contain:
 
 ```text
 \WimTools\WIMTOOLS.TAG
-```
-
-When found, it starts:
-
-```text
 \WimTools\startup.cmd
 ```
 
-The marker file content is ignored. The file only has to exist.
+`WIMTOOLS.TAG` can be empty. The content is ignored. The file only has to exist.
 
-See `PE\README.md` for the PE creation guide and `PE\startnet.cmd` for the loader template.
+## WinPE startup chain
+
+```text
+USB boot
+-> boot.wim starts WinPE
+-> X:\Windows\System32\startnet.cmd runs
+-> wpeinit initializes WinPE
+-> startnet.cmd searches C: through Z: for \WimTools\WIMTOOLS.TAG
+-> matching drive becomes USBROOT
+-> startnet.cmd calls %USBROOT%\WimTools\startup.cmd
+-> startup.cmd uses %~dp0 to locate its own WimTools directory
+```
+
+This is why no hardcoded USB drive letter is used.
 
 ## Internal WimTools version
 
@@ -73,7 +147,7 @@ WimTools\
 
 ## Restore Only version
 
-The Restore Only variant is intentionally simple:
+The Restore Only variant is intentionally reduced for simple restore use cases:
 
 ```text
 WimTools\
@@ -83,6 +157,25 @@ WimTools\
 ```
 
 `Recovery.wim` is the image file used by the restore-only script. If the repository contains only a placeholder, replace it with the real image before preparing the restore USB stick.
+
+## Generated files policy
+
+Do not commit generated Microsoft or image artifacts:
+
+```text
+*.wim
+*.esd
+*.iso
+*.cab
+*.msi
+C:\WinPE_amd64\
+WinPE media folders
+WinPE mount folders
+ADK installers
+PE Add-on installers
+```
+
+Use documentation and scripts in the repository. Build generated PE media locally from official Microsoft sources.
 
 ## Warning
 
