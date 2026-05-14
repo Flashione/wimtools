@@ -1,4 +1,4 @@
-WimTools Customer Restore
+WimTools Restore
 
 1. Run Create-WimTools-USB.cmd as Administrator.
 2. Select the USB stick disk number.
