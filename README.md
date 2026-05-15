@@ -1,6 +1,6 @@
 # WimTools
 
-WimTools is the full internal Windows PE toolkit for image restore, image capture, driver handling and USB stick preparation.
+WimTools is a Windows PE toolkit for image restore, image capture, driver handling and USB stick preparation.
 
 This repository does not build Windows PE. The PE boot environment is provided by the separate `WindowsPE` repository.
 
